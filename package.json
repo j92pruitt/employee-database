@@ -1,0 +1,25 @@
+{
+  "name": "unit-12-homework",
+  "version": "1.0.0",
+  "description": "A command line tool for interacting with a database of employees.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/j92pruitt/employee-database.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/j92pruitt/employee-database/issues"
+  },
+  "homepage": "https://github.com/j92pruitt/employee-database#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "inquirer": "^8.1.2",
+    "mysql2": "^2.2.5"
+  }
+}
