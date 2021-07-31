@@ -17,10 +17,6 @@ async function init() {
         },
     );
 
-    // const [rows,] = await db.query('SELECT * FROM employee');
-
-    // console.table(rows);
-
     return getUserChoice();
 }
 
@@ -72,7 +68,11 @@ function handleUserChoice (userChoice) {
 
 }
 
-// TODO: Create function to handle select departments.
+/**
+ * Gets data from provided table in database and displays it in a console table.
+ * @param {string} table 
+ * @returns 
+ */
 async function selectFrom(table) {
     
     const [rows,] = await db.query(`SELECT * FROM ${table}`);
@@ -83,8 +83,22 @@ async function selectFrom(table) {
 }
 
 // TODO: Create function to handle creating new departments.
-function createDepartment() {
-    console.log("Create Dapartment Chosen");
+async function createDepartment() {
+    
+    const answer = await inquirer.prompt(
+        [
+            {
+                type: 'input',
+                name: 'departmentName',
+                message: 'What is the name of the new department?'
+            }
+        ]
+    )
+
+    const [dbresponse,] = await db.query(`INSERT INTO department (name) VALUES ("${answer.departmentName}")`)
+
+    console.log(`New department created with id: ${dbresponse.insertId}`)
+
     return getUserChoice()
 }
 
