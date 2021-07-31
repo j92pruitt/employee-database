@@ -15,17 +15,36 @@ async function main() {
         },
     );
 
-    const [rows,] = await db.query('SELECT * FROM employee');
+    // const [rows,] = await db.query('SELECT * FROM employee');
 
-    console.table(rows)
+    // console.table(rows);
 
-    // db.query('SELECT * FROM employee', (err, results) => {
-    //     if (err) {
-    //         console.error(err);
-    //     } else {
-    //         console.log(results);
-    //     }
-    // });
+    userChoice = await getUserSelection();
+    console.log(`User choice is: ${userChoice}`)
+
+}
+
+async function getUserSelection(){
+    const questions = [
+        {
+            type: "list",
+            name: "dbAction",
+            message: "What would you like to do?",
+            choices: [
+                "View all Departments",
+                "Add a Deparment",
+                "View all Roles",
+                "Add a Role",
+                "View all Employees",
+                "Add an Employee",
+                "Update an Employee"
+            ]
+        }
+    ]
+
+    const answer = await inquirer.prompt(questions);
+
+    return answer.dbAction
 }
 
 main();
