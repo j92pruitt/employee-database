@@ -3,8 +3,10 @@ require('dotenv').config();
 const inquirer = require('inquirer');
 const mysql = require('mysql2/promise');
 
+let db;
+
 async function init() {
-    const db = await mysql.createConnection(
+     db = await mysql.createConnection(
         {
         host: 'localhost',
         // MySQL username,
@@ -71,8 +73,12 @@ function handleUserChoice (userChoice) {
 }
 
 // TODO: Create function to handle select departments.
-function selectDepartments() {
-    console.log("Select Dapartments Chosen");
+async function selectDepartments() {
+    
+    const [rows,] = await db.query('SELECT * FROM department');
+
+    console.table(rows);
+
     return getUserChoice()
 }
 
