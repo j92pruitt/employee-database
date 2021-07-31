@@ -51,15 +51,15 @@ async function getUserChoice(){
 function handleUserChoice (userChoice) {
 
     if (userChoice === "View all Departments") {
-        selectDepartments();
+        selectFrom('department');
     } else if (userChoice === "Add a Deparment") {
         createDepartment();
     } else if (userChoice === "View all Roles") {
-        selectRoles();
+        selectFrom('role');
     } else if (userChoice === "Add a Role") {
         createRole();
     } else if (userChoice === "View all Employees") {
-        selectEmployees();
+        selectFrom('employee');
     } else if (userChoice === "Add an Employee") {
         createEmployee();
     } else if (userChoice === "Update an Employee") {
@@ -73,9 +73,9 @@ function handleUserChoice (userChoice) {
 }
 
 // TODO: Create function to handle select departments.
-async function selectDepartments() {
+async function selectFrom(table) {
     
-    const [rows,] = await db.query('SELECT * FROM department');
+    const [rows,] = await db.query(`SELECT * FROM ${table}`);
 
     console.table(rows);
 
@@ -88,21 +88,9 @@ function createDepartment() {
     return getUserChoice()
 }
 
-// TODO: Create function to handle select roles.
-function selectRoles() {
-    console.log("Select Roles Chosen");
-    return getUserChoice()
-}
-
 // TODO: Create function to handle creating new roles.
 function createRole() {
     console.log("Create Role Chosen");
-    return getUserChoice()
-}
-
-// TODO: Create function to handle select employees.
-function selectEmployees() {
-    console.log("Select Employees Chosen");
     return getUserChoice()
 }
 
