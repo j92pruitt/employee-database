@@ -60,15 +60,15 @@ async function getUserChoice(){
 function handleUserChoice (userChoice) {
 
     if (userChoice === "View all Departments") {
-        selectFrom('department');
+        selectFromDepartment();
     } else if (userChoice === "Add a Deparment") {
         createDepartment();
     } else if (userChoice === "View all Roles") {
-        selectFrom('role');
+        selectFromRole('role');
     } else if (userChoice === "Add a Role") {
         createRole();
     } else if (userChoice === "View all Employees") {
-        selectFrom('employee');
+        selectFromEmployee('employee');
     } else if (userChoice === "Add an Employee") {
         createEmployee();
     } else if (userChoice === "Update an Employee's Role") {
@@ -81,14 +81,38 @@ function handleUserChoice (userChoice) {
 
 }
 
-/**
- * Gets data from provided table in database and displays it in a console table.
- * @param {string} table 
- * @returns /Return is a call to {@link getUserChoice}
- */
-async function selectFrom(table) {
+async function selectFromDepartment() {
     
-    const [rows,] = await db.query(`SELECT * FROM ${table}`);
+    const [rows,] = await db.query(`SELECT * FROM department`);
+
+    console.table(rows);
+
+    return getUserChoice()
+}
+
+async function selectFromRole() {
+    
+    const [rows,] = await db.query(`SELECT role.id, role.title, role.salary, department.name AS department FROM role INNER JOIN department ON role.department_id=department.id`);
+
+    console.table(rows);
+
+    return getUserChoice()
+}
+
+async function selectFromEmployee() {
+    
+    const [rows,] = await db.query(`
+    SELECT 
+    e.first_name,
+    e.last_name,
+    role.title,
+    CONCAT(m.first_name, ' ', m.last_name) AS 'Manager'
+FROM
+    employee e
+LEFT JOIN employee m ON 
+    m.id = e.manager_id
+JOIN role ON
+    role.id = e.role_id`);
 
     console.table(rows);
 
@@ -227,7 +251,10 @@ async function createEmployee() {
     return getUserChoice()
 }
 
-// TODO: Create function to handle updating existing employees.
+/**
+ * Updates the record of the user selected employee to the user selected role.
+ * @returns /Return is a call to {@link getUserChoice}
+ */
 async function updateEmployeeRole() {
     
     const [currentRoles,] = await db.query('SELECT * FROM role');
