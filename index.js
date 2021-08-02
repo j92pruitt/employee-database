@@ -228,8 +228,57 @@ async function createEmployee() {
 }
 
 // TODO: Create function to handle updating existing employees.
-function updateEmployeeRole() {
-    console.log("Update Employee Chosen");
+async function updateEmployeeRole() {
+    
+    const [currentRoles,] = await db.query('SELECT * FROM role');
+    const [currentEmployees] = await db.query('SELECT * FROM employee');
+
+    const roleNames = currentRoles.map( (record) => record.title );
+    const employeeNames = currentEmployees.map( (record) => record.first_name + " " + record.last_name )
+
+    const answer = await inquirer.prompt(
+        [
+            {
+                type: 'list',
+                name: 'employeeName',
+                message: "Which employee's role would you like to update?",
+                choices: employeeNames
+            },
+            {
+                type: 'list',
+                name: 'newRole',
+                message: "What is the employee's new role?",
+                choices: roleNames
+            }
+        ]
+    );
+
+    const indexOfUserChoice = roleNames.indexOf(answer.newRole);
+
+    const roleID = currentRoles[indexOfUserChoice].id;
+
+    const [employeeFirstName, employeeLastName] = answer.employeeName.split(" ");
+
+    let employeeID
+
+    for (let index = 0; index < currentEmployees.length; index++) {
+
+        const record = currentEmployees[index];
+
+        if (record.first_name === employeeFirstName) {
+
+            if (record.last_name === employeeLastName) {
+
+                employeeID = record.id
+
+            }
+        }
+    }
+
+    const[dbresponse,] = await db.query(`UPDATE employee SET role_id = ${roleID} WHERE id = ${employeeID}`);
+
+    console.log(dbresponse)
+
     return getUserChoice()
 }
 
