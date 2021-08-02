@@ -41,7 +41,7 @@ async function getUserChoice(){
                 "Add a Role",
                 "View all Employees",
                 "Add an Employee",
-                "Update an Employee",
+                "Update an Employee's Role",
                 "Quit"
             ]
         }
@@ -71,8 +71,8 @@ function handleUserChoice (userChoice) {
         selectFrom('employee');
     } else if (userChoice === "Add an Employee") {
         createEmployee();
-    } else if (userChoice === "Update an Employee") {
-        updateEmployee();
+    } else if (userChoice === "Update an Employee's Role") {
+        updateEmployeeRole();
     }else if ("Quit") {
         return process.exit()
     } else {
@@ -160,14 +160,75 @@ async function createRole() {
     return getUserChoice()
 };
 
-// TODO: Create function to handle creating new employees.
-function createEmployee() {
-    console.log("Create Employee Chosen");
+/**
+ * Creates a new record in employee table with using supplied first and last name. Allows user to select an existing role for the employee and assign an existing employee as their manager.
+ * @returns /Return is a call to {@link getUserChoice} 
+ */
+async function createEmployee() {
+
+    const [currentRoles,] = await db.query('SELECT * FROM role');
+    const [currentEmployees] = await db.query('SELECT * FROM employee');
+
+    const roleNames = currentRoles.map( (record) => record.title );
+    const employeeNames = currentEmployees.map( (record) => record.first_name + " " + record.last_name )
+    
+    const answer = await inquirer.prompt(
+        [
+            {
+                type: 'input',
+                name: 'firstName',
+                message: "What is the employee's first name?"
+            },
+            {
+                type: 'input',
+                name: 'lastName',
+                message: "What is the employee's last name?"
+            },
+            {
+                type: 'list',
+                name: 'role',
+                message: 'What role does this employee have?',
+                choices: roleNames
+            },
+            {
+                type: 'list',
+                name: 'managerName',
+                message: "Who is the employee's manager?",
+                choices: employeeNames
+            }
+        ]
+    );
+    
+    const indexOfUserChoice = roleNames.indexOf(answer.role);
+
+    const roleID = currentRoles[indexOfUserChoice].id;
+
+    const [managerFirstName, managerLastName] = answer.managerName.split(" ")
+
+    let managerID
+
+    for (let index = 0; index < currentEmployees.length; index++) {
+
+        const record = currentEmployees[index];
+
+        if (record.first_name === managerFirstName) {
+
+            if (record.last_name === managerLastName) {
+
+                managerID = record.id
+
+            }
+        }
+    }
+
+    const [dbresponse,] = await db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${answer.firstName}", "${answer.lastName}", "${roleID}", "${managerID}")`);
+
+    console.log(`New employee created with id: ${dbresponse.insertId}`);
     return getUserChoice()
 }
 
 // TODO: Create function to handle updating existing employees.
-function updateEmployee() {
+function updateEmployeeRole() {
     console.log("Update Employee Chosen");
     return getUserChoice()
 }
